@@ -1,0 +1,22 @@
+{
+  "name": "chat-webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build" : "npm install --prefix backEnd &&  npm install --prefix frontEnd && npm run build --prefix frontEnd",
+    "start": "npm run start --prefix backEnd"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shucayb-ayuub123/CHAT_WEB_APP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Shucayb-ayuub123/CHAT_WEB_APP/issues"
+  },
+  "homepage": "https://github.com/Shucayb-ayuub123/CHAT_WEB_APP#readme"
+}
