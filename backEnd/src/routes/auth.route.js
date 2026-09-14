@@ -1,14 +1,13 @@
 import express from "express"
+import { singUp } from "../controller/user.controllers.js"
 const router = express.Router()
 
-router.get("/singUp", (req, res) => {
-    return res.json("hellow")
-})
-router.get("/login", (req, res) => {
-    return res.json("hellow")
-})
-router.get("/logout", (req, res) => {
-    return res.json("hellow")
-})
+router.post("/singUp",singUp)
+// router.get("/login", (req, res) => {
+//     return res.json("hellow")
+// })
+// router.get("/logout", (req, res) => {
+//     return res.json("hellow")
+// })
 
 export default router
