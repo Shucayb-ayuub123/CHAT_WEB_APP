@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import { generateToken } from "../lib/utility.js"
 import { sendWelcomeEmail } from "../email/emailHandler.js"
 import "dotenv/config"
+import supabase from "../lib/supabase.js"
 export const singUp = async (req, res) => {
     const { fullName, email, password } = req.body
 
@@ -73,35 +74,71 @@ export const singUp = async (req, res) => {
     }
 }
 
-export const Login = async (req , res) => {
-    const {email ,password} = req.body
-    
+export const Login = async (req, res) => {
+    const { email, password } = req.body
+
     if (!email || !password) {
-        return res.status(400).json({message : "All feild are reqiure"})
+        return res.status(400).json({ message: "All feild are reqiure" })
     }
     try {
-        const user = await User.findOne({email})
-        if(!user) return res.status(400).json({message: "Invalid credentail"})
-        
-        const isMatch  = await bcrypt.compare(password, user.password)
-        if(!isMatch) return res.status(400).json({message : "Invalid credentail"})
+        const user = await User.findOne({ email })
+        if (!user) return res.status(400).json({ message: "Invalid credentail" })
 
-        generateToken(user._id , res)
+        const isMatch = await bcrypt.compare(password, user.password)
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentail" })
+
+        generateToken(user._id, res)
 
         res.status(200).json({
-            _id : user._id,
-            fullName : user.fullName,
-            email : user.email,
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
             profilePic: user.ProfilePic
         })
 
     } catch (error) {
-        console.error("Error in Login controller" , error)
-        res.status(500).json({message : "Internal server error"})
+        console.error("Error in Login controller", error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
-export const Logout = async (_ , res) => {
-    res.cookie("jwt","",{maxAge:0})
+export const Logout = async (_, res) => {
+    res.cookie("jwt", "", { maxAge: 0 })
     res.status(200).json("Logout it successfully. ")
+}
+
+export const updateProfile = async (req, res) => {
+    const { ProfilePic } = req.body
+
+    try {
+        
+    } catch (error) {
+        
+    }
+
+    if (!ProfilePic) return res.status(400).json({ message: "Profile pic is require" })
+
+
+    const { data, error } = await supabase.storage
+        .from('medai')
+        .upload(`profiles/${Date.now()}-${ProfilePic.originalname}`, ProfilePic.buffer, {
+            contentType: ProfilePic.mimeType
+        })
+
+    if (error) {
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+
+    const { data: publicUrl } =  supabase.storage.from("medai").getPublicUrl(data.path)
+
+    const ImageUrl = publicUrl.publicUrl
+
+    const user = await User.findByIdAndUpdate(req.user._id , {ProfilePic:ImageUrl} , {new:true})
+
+       res.status(200).json({
+            message: "Profile picture updated successfully",
+            profilePic: user.profilePic
+        });
 }
