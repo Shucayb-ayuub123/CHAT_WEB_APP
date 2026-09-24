@@ -4,6 +4,7 @@ import express from 'express'
 import dotenv from "dotenv"
 import path from "path"
 import cookieParser from "cookie-parser"
+import cors from "cors"
 dotenv.config()
 import authRoute from "./routes/auth.route.js"
 import messageRoute from "./routes/message.route.js"
@@ -14,7 +15,7 @@ const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
 
 app.use(express.json())
-
+app.use(cors({origin: process.env.CLIENT_URL , credentials:true}))
 app.use(cookieParser())
 app.use("/api/auth", authRoute)
 app.use("/api/message", messageRoute)
