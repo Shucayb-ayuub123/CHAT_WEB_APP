@@ -60,7 +60,7 @@ export const singUp = async (req, res) => {
                 _id: savedUser._id,
                 fullname: savedUser.fullName,
                 email: savedUser.email,
-                profilePic: savedUser.ProfilePic
+                ProfilePic: savedUser.ProfilePic
             });
 
         } else {
@@ -93,7 +93,7 @@ export const Login = async (req, res) => {
             _id: user._id,
             fullName: user.fullName,
             email: user.email,
-            profilePic: user.ProfilePic
+            ProfilePic: user.ProfilePic
         })
 
     } catch (error) {
@@ -108,37 +108,55 @@ export const Logout = async (_, res) => {
 }
 
 export const updateProfile = async (req, res) => {
-    const { ProfilePic } = req.body
+  try {
+  
 
-    try {
-        
-    } catch (error) {
-        
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Profile picture is required",
+      });
     }
 
-    if (!ProfilePic) return res.status(400).json({ message: "Profile pic is require" })
-
+    const fileName = `profiles/${Date.now()}-${req.file.originalname}`;
 
     const { data, error } = await supabase.storage
-        .from('medai')
-        .upload(`profiles/${Date.now()}-${ProfilePic.originalname}`, ProfilePic.buffer, {
-            contentType: ProfilePic.mimeType
-        })
+      .from("medai")
+      .upload(fileName, req.file.buffer, {
+        contentType: req.file.mimetype,
+      });
+
 
     if (error) {
-        return res.status(500).json({
-            message: error.message
-        });
+      return res.status(500).json({
+        message: error.message,
+      });
     }
 
-    const { data: publicUrl } =  supabase.storage.from("medai").getPublicUrl(data.path)
+    const { data: publicUrl } = supabase.storage
+      .from("medai")
+      .getPublicUrl(data.path);
 
-    const ImageUrl = publicUrl.publicUrl
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        ProfilePic: publicUrl.publicUrl,
+      },
+      { new: true }
+    );
 
-    const user = await User.findByIdAndUpdate(req.user._id , {ProfilePic:ImageUrl} , {new:true})
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
 
-       res.status(200).json({
-            message: "Profile picture updated successfully",
-            profilePic: user.profilePic
-        });
-}
+    res.status(200).json(user);
+
+  } catch (error) {
+    console.error("UPDATE PROFILE ERROR:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

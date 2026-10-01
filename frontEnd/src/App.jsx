@@ -3,8 +3,8 @@
   import ChatPage from './pages/ChatPage'
   import SignupPage from './pages/SignupPage'
   import LoginPage from './pages/LoginPage'
-  import { useAuthStore } from './store/useAuthStore'
-  import PageLoader from './components/pageLoader'
+  import { useAuthStore } from './store/useAuthstore.js'
+  import PageLoader from './components/PageLoader.jsx'
   import {Toaster} from "react-hot-toast"
   const App = () => {
 

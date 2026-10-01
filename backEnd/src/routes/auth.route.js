@@ -10,6 +10,6 @@ router.post("/singUp",singUp)
 router.post("/login", Login)
 router.post("/logout",Logout)
 router.put("/updateProfile",protectRoute ,upload.single("image") ,  updateProfile)
-router.get("/check" , protectRoute , (req,res) => res.status(200).json(req.user))
+router.get("/check" , protectRoute , (req,res) =>  res.status(200).json(req.user))
 
 export default router
