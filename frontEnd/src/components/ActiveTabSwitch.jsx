@@ -1,9 +1,28 @@
-import React from 'react'
+import { useChatstore } from "../store/useChatstore.js";
 
-const ActiveTabSwitch = () => {
+function ActiveTabSwitch() {
+  const { activeTab, setActiveTab } = useChatstore();
+
   return (
-    <div>ActiveTabSwitch</div>
-  )
-}
+    <div className="tabs tabs-box  bg-transparent p-2 m-2">
+      <button
+        onClick={() => setActiveTab("chats")}
+        className={`tab w-1/2  ${
+          activeTab === "chats" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400"
+        }`}
+      >
+        Chats
+      </button>
 
-export default ActiveTabSwitch
+      <button
+        onClick={() => setActiveTab("contacts")}
+        className={`tab w-1/2  ${
+          activeTab === "contacts" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400"
+        }`}
+      >
+        Contacts
+      </button>
+    </div>
+  );
+}
+export default ActiveTabSwitch;
